@@ -1,0 +1,22 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Member_getDrawnListData`$$
+
+CREATE  PROCEDURE `Font_Member_getDrawnListData`(
+in_MemberID INT(11)
+,in_page int(11)
+,in_rows int(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+
+    DECLARE v_page int(11) default 0;
+    SET @page = (in_page-1)*in_rows;
+    set v_page = (in_page-1)*in_rows;
+   
+    select * from dm_drawn_record where Status in (0,1) and MemberID = in_MemberID order by CreateTime desc limit v_page,in_rows;
+    select COUNT(*) as total from dm_drawn_record where Status in (0,1) and MemberID = in_MemberID;
+   
+END$$
+
+DELIMITER ;

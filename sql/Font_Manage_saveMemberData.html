@@ -1,0 +1,21 @@
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `Font_Manage_saveMemberData`$$
+
+CREATE PROCEDURE `Font_Manage_saveMemberData`(
+in_MemberID INT(11)
+,in_lat varchar(60)
+,in_lng varchar(60)
+,in_RoleID INT(11)
+,in_WecharAddress varchar(255)
+,in_RealName varchar(255)
+,OUT returnValue int(3)
+)
+    MODIFIES SQL DATA
+BEGIN
+    update dm_member set lat=in_lat,lng=in_lng,RoleID=in_RoleID,WecharAddress=in_WecharAddress,RealName=in_RealName,EditTime=now() where MemberID = in_MemberID;
+    select 200 as returnValue;
+END$$
+
+DELIMITER ;
+
+call Font_Manage_getSingleMemberData(1);

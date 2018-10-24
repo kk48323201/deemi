@@ -1,0 +1,126 @@
+@charset "utf-8";
+/* CSS Document */
+body{ background:#2a2f33}
+.ui-button-green:hover{ text-decoration:none;color:#54b61c;}
+#header{ padding-top:20px; width:100%; float:left; height:200px;}
+#header .menu{ margin-bottom:0; padding-top:16px;}
+#header .menu li{ list-style:none; float:left; line-height:32px; height:32px; margin-left:35px;}
+#header .menu li a{ color:#000000; text-decoration:none;}
+#header .menu li a.ui-button-green{color:#54b61c;}
+.ui-button-green{ width:80px; height:30px; line-height:30px; text-align:center; color:#54b61c; border:1px solid #54b61c;border-radius:3px; display:inline-block; float:left;text-decoration:none;}
+#intro{ text-align:center;}
+#intro h2 {
+  font-size:26px; line-height:36px;
+  color:#000;
+  font-weight: 200;
+}
+#intro .get-start {
+  width: 200px;
+  margin: 0 auto;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  position: relative;
+  height: 200px;
+}
+#intro .get-start .apply-entry {
+  display:inline-block;
+  background-color: #54b61c;
+  height:40px;
+  width:115px;
+  line-height:40px;
+  font-size:16px;
+  color: #fff;
+  cursor:pointer;
+  border-radius:2px;
+  position:absolute;
+  z-index:999;
+  top:0px;
+  left:0px;
+  font-weight: 100;
+}
+#intro .get-start .apply-entry:hover {
+  text-decoration:none;
+  background-color: rgba(84, 182, 28, 0.8);
+}
+#intro p {
+  color:#999;
+  font-size:14px;
+  font-weight: 200;
+}
+#intro .product-brief {
+  width: 905px;
+  margin: 0 auto;
+  margin-top: 135px; height:200px;
+}
+#intro .product-brief .product-brief-item {
+  width: 210px;
+}
+#intro .product-brief .product-brief-item.pay-sulotion-brief {
+  margin-left: 137.5px;
+  margin-right: 137.5px;
+}
+
+#intro .product-brief .marketing-brief em {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: #ffab0a;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+#intro .product-brief .pay-sulotion-brief em {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: #1cb669;
+  position: relative;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+#intro .product-brief .pay-sulotion-brief em:after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  background-color: #fff;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-top: -7px;
+  margin-left: -7px;
+}
+#intro .product-brief .wx-crm-brief em {
+  display: inline-block;
+  width: 0px;
+  height: 0px;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 25px solid #419794;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+#intro .product-brief .product-brief-item h3.brief-title {
+  font-size: 16px;
+  color: #333333;
+  font-weight: 400;
+}
+#intro .product-brief .product-brief-item p.detail {
+  margin-top: 5px;
+  color: #666;
+  text-align: left;
+  font-weight: 200;
+}
+#intro .product-brief .product-brief-item a {
+  display: inline-block;
+  margin-top: 15px;
+  font-size: 12px;
+  color: #999;
+  border-bottom: 1px solid #999;
+  font-weight: 200;
+}
+#intro .product-brief .product-brief-item a:hover {
+  text-decoration: none;
+}
+#View{ background:url(../images/intro-bg.png) no-repeat center; overflow:hidden;}
+#footer{ background:#2a2f33; width:100%;  color:#FFFFFF; line-height:32px; text-align:center;}

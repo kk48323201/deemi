@@ -1,0 +1,1 @@
+<p align="center" style="padding-top:8px;"><img src="<?=$img?>" style="width:95%; margin:0 auto;" /></p>

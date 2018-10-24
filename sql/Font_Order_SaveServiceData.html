@@ -1,0 +1,171 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Order_SaveServiceData`$$
+
+CREATE  PROCEDURE `Font_Order_SaveServiceData`(
+in_MemberID INT(11),
+in_AddressID INT(11),
+in_Remark varchar(255),
+in_BookingTime datetime,
+in_CartXml varchar(8000),
+OUT returnValue int(3)
+)
+    MODIFIES SQL DATA
+BEGIN
+    #客户单号
+    declare v_OrderSn varchar(60);
+    #当前时间
+    declare v_CurrentDate varchar(60);
+    #当天订单数
+    declare v_TodayOrderTotal int(11) default 0;
+    
+    declare v_DirectMemberID int(11) default 0;
+    declare v_DndirectMemberID int(11) default 0;
+    declare xml_index int(11) default 1;
+    declare v_OrderAmount decimal(10,2) default 0.00;
+    #直接奖金
+    declare v_DirectBonus decimal(10,2) default 0.00;
+    declare v_DirectRate decimal(10,2) default 0.00;
+    
+    #间接奖金
+    declare v_DndirectBonus decimal(10,2) default 0.00;
+    declare v_DndirectRate decimal(10,2) default 0.00;
+    #是否折扣地址
+    declare v_IsYouHuiAdd tinyint(1) default 0;
+    
+    #用户折扣,商户折扣
+    declare v_u_Discount decimal(10,2) default 0.00;
+    declare v_m_Discount decimal(10,2) default 0.00;
+    declare v_m_OrderAmount decimal(10,2) default 0.00;
+    declare v_u_OrderAmount decimal(10,2) default 0.00;
+    
+    select value INTO @open_user_discount from dm_config where category = 'base' and varname = 'open_user_discount' limit 0,1;
+    select value INTO @user_discount from dm_config where category = 'base' and varname = 'user_discount' limit 0,1;
+    #商家优惠地址
+    select value INTO @merchant_discount from dm_config where category = 'base' and varname = 'merchant_discount' limit 0,1;
+    
+    #当前时间
+    set v_CurrentDate = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+    #当天的订单数量
+    SELECT COUNT(*) INTO v_TodayOrderTotal FROM dm_order where DATE_FORMAT(CreateTime,"%Y-%m-%d") = DATE_FORMAT(now(),"%Y-%m-%d");
+    #编号
+    set @SnStr = LPAD(v_TodayOrderTotal,6,0);
+    SET v_OrderSn = concat('S',v_CurrentDate,@SnStr);
+        
+    #查询地址信息
+    select Customer,Phone,WecharAddress,ZdyAddress,TypeID INTO @Customer,@Phone,@WecharAddress,@ZdyAddress,v_IsYouHuiAdd from dm_address where AddressID = in_AddressID AND MemberID = in_MemberID;
+    
+    #查询直接关系
+    select A.MemberID,C.DirectRate INTO v_DirectMemberID,v_DirectRate 
+    from dm_visit_record as A
+    left join dm_member as B on A.MemberID = B.MemberID
+    left join dm_role as C on B.RoleID = C.RoleID
+    where A.CustomerID = in_MemberID and A.CreateTime > date_sub(NOW(), INTERVAL 7 DAY) 
+    order by A.CreateTime desc limit 0,1;
+    
+    #查询间接关系
+    select A.ParentID,C.DndirectRate INTO v_DndirectMemberID,v_DndirectRate 
+    from dm_member as A
+    left join dm_member as B on A.ParentID = B.MemberID
+    left join dm_role as C on B.RoleID = C.RoleID
+    where A.MemberID = in_MemberID limit 0,1;
+    if(v_DndirectMemberID < 1)and(v_DirectMemberID > 0)then
+    	select ParentID INTO v_DndirectMemberID from dm_member where MemberID = v_DirectMemberID;
+    end if;
+    INSERT INTO dm_order (
+    	IsPay
+        ,CreateTime
+        ,MemberID #消费者
+        ,OrderAmount
+        ,Customer
+        ,Phone
+        ,Sn
+        ,PayAmount
+        ,Address
+        ,BookingTime #预约时间
+        ,TravelTime  #出发时间
+        ,ServiceTime #服务时间
+        ,PaymentTime #支付时间
+        ,DirectMemberID
+        ,DndirectMemberID
+        ,DirectBonus
+        ,DndirectBonus
+        ,MasterID
+        ,Remark
+        ,Status
+        ,Region #地区
+        ,Discount #折扣
+    )values(
+    	0
+        ,now()
+        ,in_MemberID
+        ,0.00
+        ,@Customer
+        ,@Phone
+        ,v_OrderSn
+        ,0.00
+        ,@ZdyAddress
+        ,in_BookingTime
+        ,'0000-00-00 00:00:00'
+        ,'0000-00-00 00:00:00'
+        ,'0000-00-00 00:00:00'
+        ,v_DirectMemberID
+        ,v_DndirectMemberID
+        ,v_DirectBonus
+        ,v_DndirectBonus
+        ,0
+        ,in_Remark
+        ,0
+        ,@WecharAddress
+        ,0
+    );
+    #获取最新的OrderID
+    SELECT LAST_INSERT_ID() INTO @OrderID;
+    
+    #开始更新数量
+    SET @rnum = ExtractValue(in_CartXml,'count(/CartList)');
+    while xml_index<=@rnum do 
+       set @GoodsID = ExtractValue(in_CartXml,'/CartList[$xml_index]/GoodsID');
+       set @Num =  ExtractValue(in_CartXml,'/CartList[$xml_index]/Num');
+       select GoodsName,Price INTO @GoodsName,@Price from dm_goods where GoodsID = @GoodsID limit 0,1;
+       if(@Num>0)then
+       	  insert INTO dm_order_goods (GoodsName,GoodsDesc,Num,Price,OrderID,GoodsID)values(@GoodsName,'',@Num,@Price,@OrderID,@GoodsID);
+          set v_OrderAmount = v_OrderAmount + @Num*@Price;
+       end if;
+       set xml_index=xml_index+1;
+    end while;
+    #判断新用户优惠
+    if(@open_user_discount > 0)then
+    	set v_u_Discount = v_OrderAmount - v_OrderAmount*@user_discount;
+        set v_u_OrderAmount = v_OrderAmount*@user_discount;
+    end if;
+    #判断商家优惠
+    if(v_IsYouHuiAdd > 0)then
+    	set v_m_Discount = v_OrderAmount - v_OrderAmount*@merchant_discount;
+        set v_m_OrderAmount = v_OrderAmount*@merchant_discount;
+    end if;
+    if(@OrderID > 0)then
+    	#判断直接关系佣金
+        if(v_DirectMemberID >0)and(v_DirectRate > 0)then
+    		set v_DirectBonus = v_OrderAmount*v_DirectRate/100;
+    	end if; 
+        #判断间接关系佣金
+        if(v_DndirectMemberID >0)and(v_DndirectRate > 0)then
+    		set v_DndirectBonus = v_OrderAmount*v_DndirectRate/100;
+    	end if;
+        if(v_u_Discount > 0)or(v_m_Discount > 0)then
+        	if(v_m_Discount >= v_u_Discount)then
+            	update dm_order set OrderAmount = v_m_OrderAmount,DirectBonus = v_DirectBonus,DndirectBonus = v_DndirectBonus,Discount=v_m_Discount where OrderID = @OrderID;
+            else
+                update dm_order set OrderAmount = v_u_OrderAmount,DirectBonus = v_DirectBonus,DndirectBonus = v_DndirectBonus,Discount=v_u_Discount where OrderID = @OrderID;
+            end if;
+        else
+        	update dm_order set OrderAmount = v_OrderAmount,DirectBonus = v_DirectBonus,DndirectBonus = v_DndirectBonus,Discount=0 where OrderID = @OrderID;
+        end if;
+        
+        
+    end if;
+    select 200 as returnValue;
+END$$
+
+DELIMITER ;

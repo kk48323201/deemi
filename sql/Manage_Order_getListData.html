@@ -1,0 +1,42 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Manage_Order_GetListData`$$
+
+CREATE PROCEDURE `Manage_Order_GetListData`(
+in_page int(11)
+,in_rows int(11)
+,in_Status tinyint(1)
+,in_Customer varchar(255)
+,in_Phone varchar(255)
+)
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_page INT(11) DEFAULT 0;
+    SET v_page = (in_page-1)*in_rows;
+    set @wStr = "";
+    if(in_Customer != "")or(in_Customer is not null)then
+		set @wStr = concat(@wStr," and A.Customer regexp '",in_Customer,"'");
+    end if;
+    if(in_Phone != "")or(in_Phone is not null)then
+		set @wStr = concat(@wStr," and A.Phone regexp '",in_Phone,"'");
+    end if;
+    if(in_Status is not null)then
+		set @wStr = concat(@wStr," and A.Status = '",in_Status,"'");
+    end if;
+    
+    set @sql = concat("
+    	select A.*,B.RealName as MasterName,B.Mobile as MasterPhone,group_concat(C.GoodsName Separator '/') as GoodsName
+        from dm_order as A left join dm_member as B on A.MasterID = B.MemberID
+        left Join dm_order_goods as C on A.OrderID = C.OrderID
+        where A.IsDel = 0",@wStr," group by A.OrderID order by A.CreateTime desc limit ",v_page,",",in_rows);
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    
+    set @sql2 = concat("select count(*) as total from dm_order as A where `IsDel` = 0",@wStr);
+    PREPARE stmt2 FROM @sql2;
+    EXECUTE stmt2;
+END$$
+
+DELIMITER ;
+
+CALL Manage_Order_getListData('1','20',NULL,NULL,NULL);

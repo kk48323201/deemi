@@ -1,0 +1,59 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Front_Member_MobileLogin`$$
+
+CREATE  PROCEDURE `Front_Member_MobileLogin`(
+in_Mobile varchar(255)
+,in_vcode varchar(255)
+)
+    MODIFIES SQL DATA
+BEGIN
+   DECLARE v_smsCount INT(11) DEFAULT 0;
+   DECLARE v_memberCount INT(11) DEFAULT 0;
+   
+   select count(*) INTO v_smsCount FROM dm_sms where Mobile = in_Mobile and Content = in_vcode and CreateTime > DATE_SUB(NOW(), INTERVAL 60 MINUTE);
+   select count(*) INTO v_memberCount FROM dm_member where Mobile = in_Mobile and IsDel = 0;
+   if(v_memberCount>0)and(v_smsCount>0)then
+   	   select 
+       	 MemberID
+         ,Mobile
+         ,Email
+         ,WechatOpenid
+         ,WechatNickname
+         ,WechatProvince
+         ,WechatCity
+         ,WechatHeadimgurl
+         ,WechatSex
+         ,WechatUnionid
+         ,Status
+         ,RealName
+         ,IsMerchants
+         ,200 as returnValue
+       from dm_member
+       where Mobile = in_Mobile and IsDel = 0;
+   else
+   	  if(v_smsCount>0)then
+   	  	INSERT INTO dm_member SET Mobile=in_Mobile,CreateTime=now(),EditTime=now();
+        select 
+       	 Mobile
+         ,Email
+         ,WechatOpenid
+         ,WechatNickname
+         ,WechatProvince
+         ,WechatCity
+         ,WechatHeadimgurl
+         ,WechatSex
+         ,WechatUnionid
+         ,Status
+         ,RealName
+         ,IsMerchants
+         ,200 as returnValue
+       from dm_member
+       where Mobile = in_Mobile and IsDel = 0;
+      else	
+        select 500 as returnValue;
+      end if;
+   end if;
+END$$
+
+DELIMITER ;

@@ -1,0 +1,98 @@
+@charset "utf-8";
+/* CSS Document */
+*{-webkit-tap-highlight-color:rgba(255,0,0,0);}
+a{-webkit-tap-highlight-color:rgba(0, 0, 0, 0);  -moz-tap-highlight-color:rgba(0, 0, 0, 0);  -ms-tap-highlight-color:rgba(0, 0, 0, 0);  -o-tap-highlight-color:rgba(0, 0, 0, 0);tap-highlight-color:rgba(0, 0, 0, 0);}
+body{ padding:0; margin:0; font-family:PingFangSC-Regular,Helvetica,STHeiti STXihei,Microsoft JhengHei,Microsoft YaHei,Arial;}
+#bagel-nav{background:#FFF;border-bottom:1px solid #d7d6dc; overflow:hidden;-webkit-box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3); width:100%;-webkit-box-shadow:0 .03px .03px 0 rgba(0,0,0,.2);box-shadow:0 .03px .03px 0 rgba(0,0,0,.2); position:fixed; top:0; z-index:99; height:38px; overflow:hidden;}
+#bagel-nav a{ color:#3a3a3a; float:left; line-height:36px; text-decoration:none; padding:0 10px;font-size:15px; border-bottom:2px solid #FFFFFF; display:inline-block; position:relative;}
+#bagel-nav a.cur{ color:#85ab5a; border-bottom:2px solid #85ab5a;}
+
+#bagel-footer{ position:fixed; bottom:0; background:#FFFFFF;box-shadow:0 -2px 2px 0 rgba(0,0,0,.15);}
+#bagel-footer.weui-tabbar__label{ font-size:11px; color:#3a3a3a;}
+
+.zclear{ clear:both; overflow:hidden; height:0;}
+.zclear10{ clear:both; overflow:hidden; height:10px;}
+.zclear38{ clear:both; overflow:hidden; height:38px;}
+.zclear50{ clear:both; overflow:hidden; height:50px;}
+.zclear45{ clear:both; overflow:hidden; height:45px;}
+<<<<<<< HEAD
+.GItem{ padding:8px; height:120px; border-top:0.5px solid #F5F5DC; position:relative;padding-right:10px;}
+=======
+.GItem{ padding:8px; height:120px;position:relative;padding-right:10px;}
+>>>>>>> cba603039869577b5b052addcd5fa659e29533a2
+.GItem .GoodsThumb{ width:120px; height:120px; float:left; margin-right:8px;}
+.GItem .GoodsThumb img{ width:100%; height:100%;border-radius:5px;}
+.GItem .GoodsDesc h5{ font-size:16px; color:#3a3a3a; max-height:24px; overflow:hidden;white-space: nowrap;text-overflow: ellipsis}
+.GItem .GoodsDesc p{ font-size:14px; color:#878787;height:66px; overflow:hidden; padding-right:30px;}
+.GItem .GoodsDesc .money{color:#FF6600; font-size:18px;}
+.GItem .GoodsDesc em{ font-style:normal; font-size:12px; margin-left:3px; color:#FF9900;}
+.GItem .GoodsDesc i{ position:absolute; right:15px; bottom:5px;}
+.GItem .GoodsDesc .fuhao{ font-size:11px; margin-right:3px;}
+.GItem .GoodsDesc .price{position:absolute; left:138px; bottom:10px; display:block;}
+.GItem .addCart{position:absolute; right:10px; bottom:5px; z-index:1;}
+.GItem .addCart img{width:35px;}
+.GItem .commentsCount{ font-size:12px; margin-left:10px; color:#878787;}
+
+.GItemList{ border-bottom:0.5px solid #e1e1e1;}
+.GItemList .addCart img{width:25px;}
+
+#ListPageBar{background:#FFF;border-bottom:1px solid #d7d6dc; overflow:hidden;-webkit-box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3); width:100%;-webkit-box-shadow:0 .03px .03px 0 rgba(0,0,0,.2);box-shadow:0 .03px .03px 0 rgba(0,0,0,.2); position:fixed; top:0; z-index:99; height:44px;}
+#ListPageBar .right{width:10vw; display:inline-block; float:right; text-align:center; line-height:44px;}
+#ListPageBar .back img,#ListPageBar .right img{ display:inline-block; line-height:44px;}
+#ListPageBar .back img{ line-height:40px;}
+#ListPageBar .back{width:18vw; display:inline-block; float:left; text-align:center; line-height:44px;}
+#ListPageBar .back a{ color:#85ab5a; font-size:14px;}
+#ListPageBar .search{ width:72vw; display:inline-block; float:left; height:30px;}
+#ListPageBar .search a{ background:#ededee; color:#7b7a80; font-size:14px; line-height:28px; display:block;border-radius:3px;height:28px; margin-top:8px; text-indent:1em;}
+
+.pull-left{ float:left;}
+.pull-right{ float:right;}
+
+.OrderItem{ font-size:14px; border-bottom:8px solid #eeeeee;}
+.OrderItem .Sn{ float:left; color:#3a3a3a;}
+.OrderItem .Status{ float:right; color:#FF6600;}
+.OrderItem .row01{ height:32px; line-height:32px; padding:0 10px; border-bottom:1px solid #dcdcdc;}
+.OrderItem .thumb{ width:80px; height:80px;border-radius:5px; float:left; margin-right:10px;}
+.OrderItem .row02{ padding:10px; height:80px;-webkit-overflow-scrolling : touch; overflow-y:hidden;}
+.OrderItem .row03{border-top:1px solid #dcdcdc;padding:0 10px; height:32px; line-height:32px; text-align:right;border-bottom:1px solid #dcdcdc;}
+.OrderItem .row03 i{ font-style:normal; margin-right:3px; font-size:10px;}
+.OrderItem .row03 .price{ font-size:16px; font-weight:bold;color:#FF6600;}
+.OrderItem .row03 .price:before{ content:"¥";font-style:normal; margin-right:3px; font-size:10px;}
+.OrderItem .one{ position:relative; padding-right:40px;}
+.OrderItem .one .ProName{ height:66px; overflow:hidden; color:#3a3a3a;}
+.OrderItem .one .qty{ position:absolute; right:0px; top:0; line-height:22px; color:#898989;}
+.OrderItem .one .unit{ color:#898989; font-size:12px; line-height:22px; height:22px; overflow:hidden;}
+.OrderItem .plural .thumb{}
+.OrderItem .row04{ text-align:right; padding:5px 10px; height:28px;}
+.OrderItem .row04 a{color:#898989; border:1px solid #898989; display:inline-block; height:26px;border-radius:15px; padding:0 15px; line-height:26px; font-size:12px; margin-left:10px;}
+.OrderItem .row04 a.noticeButton{ color:#ef8934;border:1px solid #ef8934;}
+
+#CartSettlement{background:#FFFFFF; line-height:26px; text-align:right; position:fixed; bottom:0px; width:100%;box-shadow:0 -2px 2px 0 rgba(0,0,0,.15);}
+#CartSettlement .x{ position:absolute; right:41px; top:12px;}
+#CartSettlement label{ color:#878787; font-size:12px; width:80px; position:relative;display:inline-block; float:left; text-align:left;}
+#CartSettlement a.NextBtn{ height:46px; font-size:14px; line-height:46px; width:110px;text-align:center; float:right; display:inline-block; background:#ff8000; color:#FFFFFF;}
+#CartSettlement a.dis{ color:#FFFFFF; background:#bfbfbf;}
+#CartSettlement p{ display:inline-block; text-align:right; height:46px; line-height:46px; padding-right:10px; font-size:14px; color:#878787;}
+#CartSettlement p .total:before{ content:"¥"; margin-right:5px; font-size:11px;}
+#CartSettlement p .total{ font-size:20px; color:#ff8000; font-weight:bold;}
+
+.CartList label{ width:30px; display:inline-block; float:left; line-height:78px; height:78px; margin:1px 0;}
+.CartList div.item{height:100px;color:#000000;background-color:#FFFFFF; display:block;-webkit-tap-highlight-color:rgba(0,0,0,0); border-bottom:1px solid #d9d9d9;}
+
+.CartList .thumb{ float:left; height:80px; width:80px;border-radius:5px;margin:10px 0;margin-right:15px;}
+.CartList .thumb img{float:left; height:80px; width:80px;border-radius:5px;}
+.CartList .pro-info{ position:relative; margin-left:150px;}
+.CartList .pro-info .name{ font-size:14px; height:44px; line-height:22px; overflow:hidden; margin-bottom:14px; padding-top:10px; padding-right:20px;}
+.CartList .pro-info .price:before{ content:"¥"; font-size:11px; margin-right:3px;}
+.CartList .pro-info .price{ font-size:16px; color:#ff8000;}
+.CartList .pro-info .price span{ color:#333333; font-size:13px; margin-left:5px;}
+
+
+.CartList .count{ height:30px; width:90px; position:absolute; right:10px; bottom:-8px;}
+.CartList .count .minus{ width:26px; height:26px; text-align:center;float:left; border-right:none;}
+.CartList .count .minus img{ float:left; width:22px; height:22px;}
+.CartList .count .num{ width:38px; height:22px; text-align:center; line-height:22px;float:left; margin-top:-2px;}
+.CartList .count .plus{ width:26px; height:26px; text-align:center; line-height:22px; float:left;border-left:none;}
+.CartList .count .plus img{ float:left; width:22px; height:22px;}
+
+#BarCartNum{ display:inline-block; width:16px; height:16px;border-radius:8px; color:#FFFFFF; background:#FF0000; position:absolute; right:50%; margin-right:-22px; top:-3px; line-height:16px; font-size:10px; display:none;}

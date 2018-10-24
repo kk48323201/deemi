@@ -1,0 +1,42 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Wechat_saveInviteRecord`$$
+
+CREATE PROCEDURE `Font_Wechat_saveInviteRecord`(
+in_MemberID int(11) #邀请者
+,in_CustomerID int(11) #被邀请者
+,OUT returnValue int(3)
+)
+    MODIFIES SQL DATA
+BEGIN
+	#微信公众号，专属渠道方法
+    DECLARE v_ParentID INT(11) DEFAULT 0;
+    DECLARE v_recordCount INT(11) DEFAULT 0;
+    DECLARE v_MemberCount INT(11) DEFAULT 0;
+    DECLARE v_CustomerCount INT(11) DEFAULT 0;
+    DECLARE v_IsError TINYINT(1) DEFAULT 0;
+
+
+
+    #判断是否已经存在的会员
+    select count(*),B.IsFans INTO v_MemberCount,@IsFans from dm_member as A left join dm_role as B on A.RoleID = B.RoleID
+    where A.MemberID=in_MemberID;
+    #获取客户信息
+    select count(*),A.ParentID INTO v_CustomerCount,v_ParentID from dm_member as A
+    where A.MemberID=in_CustomerID;
+    #记录直接关系
+    if(v_MemberCount>0)and(v_CustomerCount>0)and(in_MemberID!=in_CustomerID)then
+    	insert into dm_visit_record (MemberID,CustomerID,CreateTime)values(in_MemberID,in_CustomerID,now());
+    end if;
+    #记录粉丝关系
+    if(v_MemberCount>0)and(v_CustomerCount>0)and(in_MemberID!=in_CustomerID)and(@IsFans = 1)and(v_ParentID = 0)then
+        UPDATE dm_member SET ParentID=in_MemberID where MemberID=in_CustomerID;
+        select 200 as returnValue;
+    else
+    	select 500 as returnValue;
+    end if;
+END$$
+
+DELIMITER ;
+
+call Font_Wechat_saveInviteRecord(1,3,@p);

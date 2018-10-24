@@ -1,0 +1,30 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Order_SaveComments`$$
+
+CREATE PROCEDURE `Font_Order_SaveComments`(
+in_OrderID int(11)
+,in_MemberID int(11)
+,in_Remark varchar(255)
+,in_Simple tinyint(1)
+,OUT returnValue int(3)
+)
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_OrderCount INT(11) DEFAULT 0;
+    DECLARE v_CommentsCount INT(11) DEFAULT 0;
+
+	select count(*) into v_OrderCount from dm_order where MemberID = in_MemberID and Status = 3 and OrderID = in_OrderID;
+    select count(*) into v_CommentsCount from dm_service_comments where OrderID = in_OrderID;
+    if(v_OrderCount>0)and(v_CommentsCount<1)then
+    	insert into dm_service_comments (Simple,Remark,CreateTime,OrderID)values(in_Simple,in_Remark,now(),in_OrderID);
+        select 200 as returnValue;
+    else
+    	select 500 as returnValue;
+    end if;
+
+END$$
+
+DELIMITER ;
+
+call Font_Wechat_saveInviteRecord(1,3,@p);

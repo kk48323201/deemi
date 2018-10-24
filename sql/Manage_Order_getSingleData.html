@@ -1,0 +1,24 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Manage_Order_getSingleData`$$
+
+CREATE PROCEDURE `Manage_Order_getSingleData`(
+in_OrderID int(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+    select A.*,B.RealName as MasterName,B.Mobile as MasterPhone
+    ,C.RealName as DirectMemberName,C.WechatNickname as DirectMemberNickName
+    ,D.RealName as DndirectMemberName,D.WechatNickname as DndirectMemberNickName
+    from dm_order as A
+    left join dm_member as B on A.MasterID = B.MemberID
+    left join dm_member as C on C.MemberID = A.DirectMemberID
+    left join dm_member as D on D.MemberID = A.DndirectMemberID
+    where A.OrderID = in_OrderID;
+    
+    select * from dm_order_goods where OrderID = in_OrderID;
+END$$
+
+DELIMITER ;
+
+CALL Manage_Order_getListData('1','20',NULL,NULL,NULL);

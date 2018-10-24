@@ -1,0 +1,41 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Goods_getServiceCommentsListData`$$
+
+CREATE  PROCEDURE `Font_Goods_getServiceCommentsListData`(
+in_GoodsID INT(11)
+,in_MemberID int(11)
+,in_page int(11)
+,in_rows int(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_page int(11) default 0;
+    SET @page = (in_page-1)*in_rows;
+    set v_page = (in_page-1)*in_rows;
+	
+    
+    select A.*,D.WechatHeadimgurl,WechatNickname,DATE_FORMAT(A.CreateTime,'%Y-%m-%d %H:%i') as CreateTime2 
+    from dm_service_comments as A
+    left join dm_order_goods as B on A.OrderID = B.OrderID
+    left join dm_order as E on E.OrderID = A.OrderID
+    left join dm_goods as C on B.GoodsID = C.GoodsID
+    left join dm_member as D on E.MemberID = D.MemberID
+    where A.Status = 1 or E.MemberID = in_MemberID
+    group by A.OrderID
+    order by A.CreateTime desc
+    limit v_page,in_rows;
+    
+    select count(*) as total from (
+    select A.OrderID
+    from dm_service_comments as A
+    left join dm_order_goods as B on A.OrderID = B.OrderID
+    left join dm_goods as C on B.GoodsID = C.GoodsID
+    left join dm_order as E on E.OrderID = A.OrderID
+    left join dm_member as D on E.MemberID = D.MemberID
+    where A.Status = 1 or E.MemberID = in_MemberID
+    group by A.OrderID) as v;
+    
+END$$
+
+DELIMITER ;

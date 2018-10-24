@@ -1,0 +1,39 @@
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `Font_Manage_getMemberListData`$$
+
+CREATE  PROCEDURE `Font_Manage_getMemberListData`(
+in_MemberID INT(11)
+,in_page int(11)
+,in_rows int(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_page int(11) default 0;
+    DECLARE v_Manage tinyint(11) default 0;
+    SET @page = (in_page-1)*in_rows;
+    set v_page = (in_page-1)*in_rows;
+    
+    select B.Manage into v_Manage from dm_member as A
+    left join dm_role as B on A.RoleID = B.RoleID
+    where A.MemberID = in_MemberID;
+    
+    if(v_Manage = 1)then
+    	select 200 as returnValue;
+    else
+    	select 500 as returnValue;
+    end if;
+    
+    select A.MemberID,A.Mobile,A.WechatNickname,A.WechatHeadimgurl,A.RealName,B.RoleName,A.ParentID,C.RealName as ParentName
+    from dm_member as A
+    left join dm_role as B on A.RoleID = B.RoleID
+    left join dm_member as C on A.ParentID = C.MemberID
+    where A.IsDel = 0 
+    order by A.EditTime desc
+    limit v_page,in_rows;
+    
+    select count(*) as total from dm_member where IsDel = 0;
+END$$
+
+DELIMITER ;
+
+call Font_Manage_getMemberListData(1,1,20);

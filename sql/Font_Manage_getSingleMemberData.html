@@ -1,0 +1,19 @@
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `Font_Manage_getSingleMemberData`$$
+
+CREATE PROCEDURE `Font_Manage_getSingleMemberData`(
+in_MemberID INT(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+    select A.RoleID,A.lat,A.lng,A.RealName,A.MemberID,B.RoleName,A.WecharAddress,A.ParentID,C.RealName as ParentName
+    from dm_member as A 
+    left join dm_role as B on A.RoleID = B.RoleID
+    left join dm_member as C on A.ParentID = C.MemberID
+    where A.IsDel = 0 and A.MemberID = in_MemberID; 
+   
+END$$
+
+DELIMITER ;
+
+call Font_Manage_getSingleMemberData(1);

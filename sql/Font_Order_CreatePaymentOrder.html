@@ -1,0 +1,36 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Order_CreatePaymentOrder`$$
+
+CREATE PROCEDURE `Font_Order_CreatePaymentOrder`(in_MemberID INT(11),in_Sn varchar(255))
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_OrderCount INT(11) DEFAULT 0;
+	DECLARE v_Status TINYINT(1);
+    DECLARE v_OrderID INT(11);
+    DECLARE v_OutTradeNo varchar(255);
+    DECLARE v_OrderAmount decimal(12,2) DEFAULT 0.00;
+    DECLARE v_OrderCreateTime datetime;
+    DECLARE v_IsError tinyint(1) DEFAULT 0;
+    set v_OutTradeNo = MD5(UUID());
+    #创建支付订单
+    select count(*) INTO v_OrderCount FROM dm_order where Sn = in_Sn and Status in (2,3);
+    IF(v_OrderCount > 0)THEN
+    	select Status,OrderID,OrderAmount,CreateTime INTO v_Status,v_OrderID,v_OrderAmount,v_OrderCreateTime from dm_order where Sn = in_Sn;
+    ELSE
+     	SET v_IsError = 1;
+    END IF;
+    
+    IF(v_IsError > 0)THEN
+    	SELECT 500 AS code;
+    ELSE
+    	INSERT INTO dm_payment_order(OutTradeNo,Amount,OrderID,CreateTime,MemberID)VALUES(v_OutTradeNo,v_OrderAmount,v_OrderID,now(),in_MemberID);
+        
+        SELECT 200 AS code,v_OutTradeNo as OutTradeNo,v_OrderAmount as OrderAmount;
+    END IF;
+    
+END$$
+
+DELIMITER ;
+
+call Font_Order_CreatePaymentOrder(1,"S201809241509000000");

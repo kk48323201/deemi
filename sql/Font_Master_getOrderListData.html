@@ -1,0 +1,55 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Master_getOrderListData`$$
+
+CREATE  PROCEDURE `Font_Master_getOrderListData`(
+in_MasterID INT(11)
+,in_Status tinyint(1)
+,in_page int(11)
+,in_rows int(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_OrderID INT(11);
+    #0抢单,1进行中,2已完成
+    DECLARE v_Status TINYINT(1) DEFAULT 0;
+    DECLARE v_page int(11) default 0;
+    SET @page = (in_page-1)*in_rows;
+    set v_page = (in_page-1)*in_rows;
+	#获取基础信息
+    set @nowtime = DATE_ADD(NOW(),INTERVAL -30 MINUTE);
+    set @w = "";
+    
+    if(in_Status = 0)then
+    	select A.OrderID,A.BookingTime,A.Region,A.Address,A.Status,A.OrderAmount,A.Sn,A.Customer,A.Phone from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0 and A.Status = 0
+        order by A.CreateTime desc limit v_page,in_rows;
+        select count(*) as total from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0 and A.Status = 0;
+    elseif(in_Status = 1)then
+    	select A.OrderID,A.BookingTime,A.Region,A.Address,A.Status,A.OrderAmount,A.Sn,A.Customer,A.Phone from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0 and A.Status in (1,2,3)
+        order by A.Status desc,A.BookingTime desc limit v_page,in_rows;
+        select count(*) as total from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0 and A.Status in (1,2,3);
+     elseif(in_Status = 2)then
+    	select A.OrderID,A.BookingTime,A.Region,A.Address,A.Status,A.OrderAmount,A.Sn,A.Customer,A.Phone from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0 and A.Status = 4
+        order by A.ServiceTime desc limit v_page,in_rows;
+        select count(*) as total from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0 and A.Status = 4;
+        
+    else
+    	select A.OrderID,A.BookingTime,A.Region,A.Address,A.Status,A.OrderAmount,A.Sn,A.Customer,A.Phone from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0
+        order by A.CreateTime desc limit v_page,in_rows;
+        select count(*) as total from dm_order as A
+        where A.MasterID = in_MasterID and IsDel = 0;
+    end if;
+    
+    
+END$$
+
+DELIMITER ;
+
+CALL Font_Member_getOrderListData('1','2','1','15');

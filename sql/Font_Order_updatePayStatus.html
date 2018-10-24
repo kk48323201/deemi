@@ -1,0 +1,37 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Order_updatePayStatus`$$
+
+CREATE PROCEDURE `Font_Order_updatePayStatus`(
+in_OutTradeNo varchar(255)
+,in_PaymentID INT(11)
+,in_MetaValue TEXT
+,in_PayAmount DECIMAL(12,2)
+,OUT returnValue int(3)
+)
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE v_cnt INT(11) DEFAULT 0;
+    DECLARE v_OrderID INT(11) DEFAULT 0;
+    DECLARE v_MemberID INT(11) DEFAULT 0;
+    
+    SELECT A.OrderID,A.MemberID INTO v_OrderID,v_MemberID FROM dm_payment_order as B
+    left join dm_order as A on A.OrderID = B.OrderID
+    where B.OutTradeNo = in_OutTradeNo;
+    
+    UPDATE dm_order SET IsPay=1,PayAmount=in_PayAmount,Status=4,PaymentTime=now() where OrderID = v_OrderID;
+    SELECT FOUND_ROWS() into v_cnt; 
+    
+    if(v_cnt > 0)then
+        INSERT INTO dm_order_record(MetaKey,MetaValue,CreateTime,OrderID,MemberID)
+        VALUES('payTime',in_MetaValue,now(),v_OrderID,v_MemberID);
+        select 200 as returnValue;
+    else
+    	select 500 as returnValue;
+    end if;
+END$$
+
+DELIMITER ;
+
+
+Font_Order_updatePayStatus('b3322823d2dc087e4b03ee9e27ca894b','1','{"appid":"wxd53c2773b81fcfb6","attach":"ServiceOrder","bank_type":"CFT","cash_fee":"1","fee_type":"CNY","is_subscribe":"Y","mch_id":"1483356012","nonce_str":"b77kgxz84azx10jaqudzhf3blc5o1xmw","openid":"o9NXrs3KXuNvH1Oplpu7dIgtZmJc","out_trade_no":"b3322823d2dc087e4b03ee9e27ca894b","result_code":"SUCCESS","return_code":"SUCCESS","sign":"3961792A95330FBEAAF8877F2B9A1368","time_end":"20180927230205","total_fee":"1","trade_type":"JSAPI","transaction_id":"4200000179201809275531398674"}',0.01,@p_returnValue);

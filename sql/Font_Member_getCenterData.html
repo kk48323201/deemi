@@ -1,0 +1,50 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Member_getCenterData`$$
+
+CREATE  PROCEDURE `Font_Member_getCenterData`(
+in_MemberID INT(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+
+	DECLARE v_DirectBonus decimal(12,2) DEFAULT 0.00;
+    DECLARE v_DndirectBonus decimal(12,2) DEFAULT 0.00;
+    DECLARE v_DepositaAmount decimal(12,2) DEFAULT 0.00;
+    
+    #获取正在进行的任务单
+    select A.RoleID,A.Mobile INTO @RoleID,@Mobile from dm_member as A
+    left join dm_role as B on A.RoleID = B.RoleID
+    where A.MemberID = in_MemberID and A.IsDel = 0;
+    
+    select count(*) INTO @TaskCount from dm_order as A where A.MasterID = in_MemberID and A.Status in (1,2,3);
+    #获取直接收益
+    select sum(DirectBonus) INTO v_DirectBonus from dm_order where DirectMemberID = in_MemberID and Status = 4;
+    #获取间接收益
+    select sum(DndirectBonus) INTO v_DndirectBonus from dm_order where DndirectMemberID = in_MemberID and Status = 4;
+    #已提现
+    select sum(Amount) INTO v_DepositaAmount from dm_drawn_record where MemberID = in_MemberID and Status != 2;
+    #获取角色管理权限
+    select B.Manage INTO @Manage from dm_member as A left join dm_role as B on A.RoleID=B.RoleID where A.MemberID = in_MemberID;
+    #收益
+    set @a = v_DirectBonus+v_DndirectBonus;
+    if(@a = '')then
+    	set @a = 0.00;
+    end if;
+    set @b = v_DirectBonus+v_DndirectBonus-v_DepositaAmount;
+    if(@b = '')then
+    	set @b = 0.00;
+    end if;
+    select 
+        @a as Earnings
+        ,@Manage as Manage
+    	,@b as Cash
+        ,@TaskCount as TaskCount
+        ,@RoleID as RoleID
+        ,@Mobile as Mobile;
+    
+END$$
+
+DELIMITER ;
+
+call Font_Member_getCenterData(1);

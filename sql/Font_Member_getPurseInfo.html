@@ -1,0 +1,25 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Member_getPurseInfo`$$
+
+CREATE  PROCEDURE `Font_Member_getPurseInfo`(
+in_MemberID INT(11)
+,in_page int(11)
+,in_rows int(11)
+)
+    MODIFIES SQL DATA
+BEGIN
+
+    DECLARE v_page int(11) default 0;
+    SET @page = (in_page-1)*in_rows;
+    set v_page = (in_page-1)*in_rows;
+
+    
+    select * from dm_capital_record where IsDel = 0 and MemberID = in_MemberID order by CreateTime desc limit v_page,in_rows;
+    select sum(Amount) INTO @totalAmount from dm_capital_record where IsDel = 0 and MemberID = in_MemberID and TypeID in (0,2);
+    select COUNT(*) into @total from dm_capital_record where IsDel = 0 and MemberID = in_MemberID;
+    select ifnull(@totalAmount,0.00) as totalAmount,@total as total;
+    
+END$$
+
+DELIMITER ;

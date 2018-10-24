@@ -1,0 +1,25 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Master_Order_getSingleData`$$
+
+CREATE  PROCEDURE `Font_Master_Order_getSingleData`(
+in_MasterID INT(11)
+,in_Sn varchar(255)
+)
+    MODIFIES SQL DATA
+BEGIN
+    select A.OrderID,A.Sn,A.BookingTime,A.ServiceTime,A.Address,A.Region,A.OrderAmount,A.Status,A.Customer,A.Phone,A.Remark
+    ,B.RealName as MaterName,B.Mobile as MasterPhone
+    from dm_order AS A
+    left join dm_member as B on A.MasterID = B.MemberID
+    where A.MasterID = in_MasterID and A.Sn = in_Sn;
+    
+    select A.* from dm_order_goods as A
+    left join dm_order as B on A.OrderID = B.OrderID
+    where B.Sn = in_Sn and B.MasterID = in_MasterID; 
+    
+END$$
+
+DELIMITER ;
+
+CALL Font_Member_getOrderListData('1','2','1','15');

@@ -1,0 +1,32 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Font_Other_sendSmsCode`$$
+
+CREATE PROCEDURE `Font_Other_sendSmsCode`(
+in_Mobile varchar(255)
+,in_Code varchar(255)
+,in_MemberID int(11)
+,OUT returnValue int(3)
+)
+    MODIFIES SQL DATA
+BEGIN
+	DECLARE v_count INT(11) DEFAULT 0;
+    DECLARE v_zcount INT(11) DEFAULT 0;
+	select count(*) INTO v_count from dm_sms where Mobile = in_Mobile and MemberID = in_MemberID and CreateTime>=DATE_SUB(NOW(),INTERVAL 1 MINUTE);
+    #当天总信息数
+    select count(*) INTO v_zcount from dm_sms where Mobile = in_Mobile and MemberID = in_MemberID and to_days(CreateTime) = to_days(now());
+    if(v_count>0)then
+    	SELECT 500 AS returnValue;
+    else
+    	if(v_zcount>4)then
+        	SELECT 501 AS returnValue;
+        else
+        	insert into dm_sms (Content,Mobile,CreateTime,MemberID)value(in_Code,in_Mobile,now(),in_MemberID);
+        	SELECT 200 AS returnValue;
+        end if;
+    end if;
+END$$
+
+DELIMITER ;
+
+CALL Font_Agent_CenterData('12')

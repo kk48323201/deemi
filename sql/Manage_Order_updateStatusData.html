@@ -1,0 +1,24 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `Manage_Order_updateStatusData`$$
+
+CREATE PROCEDURE `Manage_Order_updateStatusData`(
+in_OrderID int(11)
+,in_Status int(11)
+,OUT returnValue int(3)
+)
+BEGIN
+    set returnValue = 500;
+    if(in_Status = 5)then
+    	update dm_order set Status = 5 where OrderID = in_OrderID and `Status` < 2;
+        set @row = row_count();
+        if(@row > 0)then
+        	set returnValue = 200;
+        end if; 
+    end if;
+END$$
+
+DELIMITER ;
+
+
+call Manage_Order_updateStatusData(2,5,@p);select @p;
